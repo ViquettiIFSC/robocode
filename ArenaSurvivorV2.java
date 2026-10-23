@@ -8,7 +8,7 @@ public class ArenaSurvivorV2 extends AdvancedRobot {
     private int direction = 1;
     private String target;
     private double enemyX, enemyY, enemyHeading, enemyVelocity;
-    private long seen;
+    private long lastSeen;
 
     @Override
     public void run() {
@@ -16,10 +16,8 @@ public class ArenaSurvivorV2 extends AdvancedRobot {
         setAdjustGunForRobotTurn(true);
         setAdjustRadarForGunTurn(true);
         setAdjustRadarForRobotTurn(true);
-        target = null;
-        direction = 1;
+        setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
         while (true) {
-            setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
             setTurnRight(6 * direction); // Movimento em arco; ainda não avalia riscos.
             if (Math.abs(getDistanceRemaining()) < 20) setAhead(160 * direction);
             aimAndFire();
@@ -32,35 +30,36 @@ public class ArenaSurvivorV2 extends AdvancedRobot {
         // Mantém o alvo, mas aceita outro 20% mais próximo ou substitui leitura antiga.
         double oldDistance = Math.hypot(enemyX - getX(), enemyY - getY());
         if (target != null && !target.equals(event.getName())
-                && getTime() - seen <= 10 && event.getDistance() >= oldDistance * 0.8) return;
+                && getTime() - lastSeen <= 10 && event.getDistance() >= oldDistance * 0.8) return;
         target = event.getName();
         double bearing = getHeadingRadians() + event.getBearingRadians();
         enemyX = getX() + Math.sin(bearing) * event.getDistance();
         enemyY = getY() + Math.cos(bearing) * event.getDistance();
         enemyHeading = event.getHeadingRadians();
         enemyVelocity = event.getVelocity();
-        seen = getTime();
+        lastSeen = getTime();
     }
 
     private void aimAndFire() {
         // Evita gastar energia com um alvo perdido ou esgotar nossa reserva.
-        if (target == null || getTime() - seen > 10 || getEnergy() <= 1.1) return;
-        double range = Math.hypot(enemyX - getX(), enemyY - getY());
-        double power = Math.max(0.5, Math.min(2, 400 / Math.max(1, range)));
-        power = Math.min(power, (getEnergy() - 1) / 5);
+        long scanAge = getTime() - lastSeen;
+        if (target == null || scanAge > 10) return;
+        double distance = Math.hypot(enemyX - getX(), enemyY - getY());
+        double power = Math.min(clamp(400 / Math.max(1, distance), 0.5, 2),
+                (getEnergy() - 1) / 5);
         if (power < Rules.MIN_BULLET_POWER) return;
 
         // Uma aproximação do tempo de voo: não recalcula a distância prevista.
-        double ticks = getTime() - seen + range / Rules.getBulletSpeed(power);
-        double px = clamp(enemyX + Math.sin(enemyHeading) * enemyVelocity * ticks,
+        double ticks = scanAge + distance / Rules.getBulletSpeed(power);
+        double predictedX = clamp(enemyX + Math.sin(enemyHeading) * enemyVelocity * ticks,
                 18, getBattleFieldWidth() - 18);
-        double py = clamp(enemyY + Math.cos(enemyHeading) * enemyVelocity * ticks,
+        double predictedY = clamp(enemyY + Math.cos(enemyHeading) * enemyVelocity * ticks,
                 18, getBattleFieldHeight() - 18);
-        double error = normalRelativeAngle(Math.atan2(px - getX(), py - getY())
+        double gunTurn = normalRelativeAngle(Math.atan2(predictedX - getX(), predictedY - getY())
                 - getGunHeadingRadians());
-        setTurnGunRightRadians(error);
+        setTurnGunRightRadians(gunTurn);
         // Só dispara se a direção atual do canhão já estiver próxima da mira.
-        if (getGunHeat() == 0 && Math.abs(error) < 0.08) setFire(power);
+        if (getGunHeat() == 0 && Math.abs(gunTurn) < 0.08) setFire(power);
     }
 
     @Override
