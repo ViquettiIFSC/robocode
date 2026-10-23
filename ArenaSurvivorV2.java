@@ -75,7 +75,6 @@ public class ArenaSurvivorV2 extends AdvancedRobot {
         setAhead(160 * direction);
     }
 
-    //.
     @Override public void onHitWall(HitWallEvent event) { reverse(); }
     @Override public void onHitRobot(HitRobotEvent event) {
         if (event.isMyFault()) reverse();
