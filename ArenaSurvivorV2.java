@@ -62,6 +62,8 @@ public class ArenaSurvivorV2 extends AdvancedRobot {
         if (getGunHeat() == 0 && Math.abs(gunTurn) < 0.08) setFire(power);
     }
 
+    //.
+
     @Override
     public void onRobotDeath(RobotDeathEvent event) {
         // Libera o alvo morto para escolher outro na próxima leitura.
