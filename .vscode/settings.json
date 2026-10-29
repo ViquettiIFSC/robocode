@@ -1,0 +1,11 @@
+{
+    "java.project.sourcePaths": ["."],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": ["C:/robocode/libs/robocode.jar"],
+    "files.exclude": {
+        "**/.vscode": true,
+        "**/.gitignore": true,
+        "**/bin": true,
+        "**/*.class": true
+    }
+}
