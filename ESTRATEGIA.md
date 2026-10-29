@@ -151,24 +151,36 @@ mesmo turno. Os três giros são configurados para operar independentemente.
 
 ## Validação realizada
 
-Testado em **29/10/2026**, no Robocode **1.11.1**, sem interface gráfica, com
-classes compiladas para Java 8. A versão final concluiu 42 rodadas:
+Testado novamente em **29/10/2026**, no motor do Robocode **1.11.1**, sem
+interface gráfica, com classes compiladas para Java 8. O código atual foi
+testado sem alterações e concluiu **64 rodadas**, distribuídas em seis baterias:
 
 | Cenário | Rodadas | Vitórias do ArenaSurvivorV2 |
 | --- | --- | --- |
-| Oito robôs, arena 800 × 600 | 15 | 15 |
-| Oito robôs, arena 1200 × 900 | 15 | 14 |
+| Oito robôs, arena 800 × 600 | 20 | 19 |
+| Oito robôs, arena 1200 × 900 | 20 | 19 |
+| Oito robôs, arena 600 × 400 | 10 | 9 |
 | Duelo contra `sample.Walls` | 5 | 5 |
-| Duelo contra `sample.SpinBot` | 5 | 5 |
-| Partida iniciando no canto, arena 400 × 400, contra `sample.SittingDuck` | 2 | 2 |
+| Duelo contra `sample.SpinBot` | 5 | 4 |
+| Partida iniciando no canto, arena 400 × 400, contra `sample.SittingDuck` | 4 | 4 |
 
-Nas duas baterias com oito robôs, os adversários foram `Walls`, `SpinBot`,
+Nas três baterias com oito robôs, os adversários foram `Walls`, `SpinBot`,
 `Crazy`, `Fire`, `RamFire`, `TrackFire` e `Corners`, todos do pacote `sample`.
-O ArenaSurvivorV2 terminou em primeiro na pontuação acumulada das duas baterias.
+O ArenaSurvivorV2 venceu **47 de 50 rodadas de Battle Royale (94%)** e terminou
+em primeiro na pontuação acumulada de todas as seis baterias. No total, venceu
+60 de 64 rodadas. As vitórias foram confirmadas pelas mensagens do motor,
+para não contar eventuais primeiros lugares compartilhados como vitórias.
 
-Não houve erros de execução nem turnos pulados reportados. Uma verificação
-separada confirmou que, com 0,5 de energia, ele ainda pode disparar uma bala de
-potência 0,1 para finalizar um alvo fraco; com 0,25, preserva a reserva e não atira.
+Não houve erros de execução, posições inválidas nem turnos pulados reportados.
+O robô esteve em movimento em aproximadamente 97,3% dos turnos em que estava
+vivo. Nenhum estado de colisão com parede foi registrado nas observações do
+motor, inclusive nas quatro partidas iniciadas na posição (20, 20), apontando
+para o canto. Houve contato com outros robôs em 250 turnos; esse número conta
+turnos de contato, não colisões distintas.
+
+Na validação anterior, uma verificação separada também confirmou que, com 0,5
+de energia, ele pode disparar uma bala de potência 0,1 para finalizar um alvo
+fraco; com 0,25, preserva a reserva e não atira.
 
 O movimento usa aleatoriedade e as posições iniciais das baterias maiores
 também variam. Esses resultados descrevem esta execução contra robôs de
