@@ -36,17 +36,18 @@ public class StrafeSurvivor extends AdvancedRobot {
     @Override
     public void onScannedRobot(ScannedRobotEvent evento) {
         boolean mesmoAlvo = evento.getName().equals(nomeAlvo);
-        if (nomeAlvo != null && !nomeAlvo.equals(evento.getName())) {
-            long idadeLeitura = getTime() - ultimoAvistamentoAlvo;
-            if (idadeLeitura <= TICKS_ALVO_DESATUALIZADO) {
-                double xPrevisto = limitar(posicaoInimigoX + Math.sin(direcaoInimigo)
-                        * velocidadeInimigo * idadeLeitura, 18, getBattleFieldWidth() - 18);
-                double yPrevisto = limitar(posicaoInimigoY + Math.cos(direcaoInimigo)
-                        * velocidadeInimigo * idadeLeitura, 18, getBattleFieldHeight() - 18);
-                double distanciaAlvoAtual = Math.hypot(xPrevisto - getX(), yPrevisto - getY());
-                if (evento.getDistance() >= distanciaAlvoAtual) return;
+       if (nomeAlvo != null && !nomeAlvo.equals(evento.getName())) {
+
+        long idadeLeitura = getTime() - ultimoAvistamentoAlvo;
+
+        if (idadeLeitura <= TICKS_ALVO_DESATUALIZADO) {
+
+         // Prioriza o inimigo com menor energia.
+         if (evento.getEnergy() >= energiaInimigo) {
+            return;
             }
-        }
+      }
+    }
         if (mesmoAlvo && energiaInimigo >= 0) {
             double quedaEnergia = energiaInimigo - evento.getEnergy();
             if (quedaEnergia >= 0.1 && quedaEnergia <= 3.0) {
