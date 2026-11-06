@@ -25,8 +25,9 @@ public class StrafeSurvivor extends AdvancedRobot {
         setAdjustRadarForRobotTurn(true);
 
         while (true) {
-            // Se perder o alvo, gira o radar para procurar outro robô.
-            if (nomeAlvo == null) {
+            // Ultima modificação
+            // Retoma a busca se não houver alvo ou se ele ficar mais de 8 ticks sem ser visto.
+            if (nomeAlvo == null || getTime() - ultimoAvistamentoAlvo > TICKS_ALVO_DESATUALIZADO) {
                 setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
             }
             execute();
